@@ -1,0 +1,25 @@
+{
+  "name": "projectstore",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node --env-file=.env --watch main",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shw4114123-star/projectStore.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/shw4114123-star/projectStore/issues"
+  },
+  "homepage": "https://github.com/shw4114123-star/projectStore#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
