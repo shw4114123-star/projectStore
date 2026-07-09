@@ -1,0 +1,60 @@
+[
+    {
+        "customerId": "c1",
+        "balance": 350.00,
+        "cart": [
+            {
+                "productId": "1",
+                "quantity": 1
+            },
+            {
+                "productId": "5",
+                "quantity": 2
+            }
+        ],
+        "createdAt": "2026-01-15T08:30:00Z"
+    },
+    {
+        "customerId": "c2",
+        "balance": 50.25,
+        "cart": [],
+        "createdAt": "2026-02-20T14:22:18Z"
+    },
+    {
+        "customerId": "c3",
+        "balance": 1200.00,
+        "cart": [
+            {
+                "productId": "4",
+                "quantity": 1
+            }
+        ],
+        "createdAt": "2026-03-05T11:05:42Z"
+    },
+    {
+        "customerId": "c4",
+        "balance": 0.00,
+        "cart": [
+            {
+                "productId": "2",
+                "quantity": 1
+            },
+            {
+                "productId": "6",
+                "quantity": 3
+            }
+        ],
+        "createdAt": "2026-05-12T19:40:00Z"
+    },
+    {
+        "customerId": "c5",
+        "balance": 275.50,
+        "cart": [
+            {
+                "productId": "7",
+                "quantity": 1
+            }
+        ],
+        "createdAt": "2026-06-01T09:15:30Z"
+    }
+]

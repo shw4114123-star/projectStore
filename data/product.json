@@ -1,0 +1,50 @@
+[
+    {
+        "id": "1",
+        "name": "Air Max Classic Sneaker",
+        "price": 129.99,
+        "stock": 45
+    },
+    {
+        "id": "2",
+        "name": "Ultraboost Running Shoes",
+        "price": 179.50,
+        "stock": 30
+    },
+    {
+        "id": "3",
+        "name": "Retro High-Top Basketball Shoes",
+        "price": 149.99,
+        "stock": 20
+    },
+    {
+        "id": "4",
+        "name": "Urban Leather Boots",
+        "price": 199.00,
+        "stock": 15
+    },
+    {
+        "id": "5",
+        "name": "Classic Canvas Low-Top",
+        "price": 59.99,
+        "stock": 80
+    },
+    {
+        "id": "6",
+        "name": "Lightweight Summer Slides",
+        "price": 34.95,
+        "stock": 120
+    },
+    {
+        "id": "7",
+        "name": "Trail Outdoor Hiking Boots",
+        "price": 159.99,
+        "stock": 25
+    },
+    {
+        "id": "8",
+        "name": "Minimalist Daily Trainer",
+        "price": 89.90,
+        "stock": 60
+    }
+]
