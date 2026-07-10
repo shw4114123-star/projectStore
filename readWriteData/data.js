@@ -33,9 +33,7 @@ export async function readProductFile() {
 
 export async function writeCustomerFile(data) {
     try {
-        const allData = await readcustomerFile()
-        allData.push(data)
-        const write = fsPromises.writeFile(".././data/customer.json", JSON.stringify(allData,null,4), "utf-8");
+        const write = fsPromises.writeFile("./data/customer.json", JSON.stringify(data,null,4), "utf-8");
         return "succesfuly"
     } catch (e) {
         return `error: ${e}`
