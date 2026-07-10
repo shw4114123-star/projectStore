@@ -1,13 +1,14 @@
 import express from "express"
-import { readProductFile, readcustomerFile } from ".././readWriteData/data.js"
+import { readProductFile, readcustomerFile, readOrderFile, writeCustomerFile } from ".././readWriteData/data.js"
+import { checkProduct, checkCustomerId } from ".././service/service.js"
 
 const router = express.Router()
 const products = await readProductFile()
-const costumers = await readcustomerFile()
-const others =
-    router.get("/", (req, res) => {
-        res.end("hello from API")
-    })
+const customers = await readcustomerFile()
+
+router.get("/", (req, res) => {
+    res.end("hello from API")
+})
 
 router.get("/health", (req, res) => {
     res.end("the server working")
@@ -20,7 +21,7 @@ router.get("/products", (req, res) => {
     if (maxPrice) {
         if (isNaN(maxPrice) || maxPrice.length <= 0) {
             res.status(400)
-            return res.end(JSON.stringify({ "success": false, "message": "Error url" }))
+            return res.json({ "success": false, "message": "Error url" })
         }
         data = data.filter(product => +product.price <= maxPrice);
     }
@@ -32,7 +33,7 @@ router.get("/products", (req, res) => {
     }
     if (inStock && inStock !== "true") {
         res.status(400)
-        return res.end(JSON.stringify({ "success": false, "message": "Error url" }));
+        return res.json({ "success": false, "message": "Error url" });
     }
     if (product.length === data.length && req.url.includes("?")) return res.end("not find a right query")
     return res.json(data)
@@ -42,28 +43,83 @@ router.get("/cart", (req, res) => {
     try {
         const { customerId } = req.query
         if (customerId) {
-            const findCartById = costumers.find(costumer => costumer.customerId == customerId);
+            const findCartById = customers.find(customer => customer.customerId === customerId);
             if (findCartById) {
-                const costumerCart = findCartById.cart
-                return res.json(costumerCart)
+                const customerCart = findCartById.cart
+                return res.json(customerCart)
             } else {
                 res.status(404)
-                return res.end(JSON.stringify({ "success": false, "message": "not found costumer" }))
+                return res.json({ "success": false, "message": "not found customer" })
             }
         } else {
             res.status(400)
-            return res.end(JSON.stringify({ "success": false, "message": "Error url" }))
+            return res.json({ "success": false, "message": "Error url" })
         }
     } catch (e) {
-        res.end(`error: ${e}`)
+        res.status(500)
+        return res.json({ "success": false, "message": `erorr: ${e}` })
+    }
+})
+
+router.get("/account/balance", async (req, res) => {
+    try {
+        const customersData = await readcustomerFile()
+        const { customerId } = req.query
+        if (!customerId) {
+            res.status(400)
+            return res.json({ "success": false, "message": "wrong url" })
+        }
+        const customer = customersData.find(customer => customer.customerId === customerId)
+        if (!customer) {
+            res.status(404)
+            return res.json({ "success": false, "message": "customer not found" })
+        }
+        return res.json({ "success": true, "data": `balence: ${customer.balance}` })
+    } catch (e) {
+        res.status(500)
+        return res.json({ "success": false, "message": `erorr: ${e}` })
+    }
+})
+
+router.post("/cart/items", async (req, res) => {
+    try {
+        const { customerId, productId, quantity } = req.body;
+        const checkCustomer = await checkCustomerId(customerId)
+        if (!customerId || !checkCustomer) return res.json({ "success": false, "message": "Error message" });
+        if (!productId) return res.json({ "success": false, "message": "Error message" });
+        if (!quantity) return res.json({ "success": false, "message": "Error message" });
+        const checkProducts = await checkProduct(productId, quantity)
+        return res.json(checkProducts);
+    } catch (e) {
+        res.status(500)
+        return res.json({ "success": false, "message": `erorr: ${e}` })
     }
 })
 
 
-router.post("/cart/items", (req, res) => {
-    const { customerId, productId, quantity } = req.body;
-    if (!customerId) return
-
-
+router.delete("/cart/items/:productId", async (req, res) => {
+    try {
+        const customerData = await readcustomerFile()
+        const { productId } = req.params
+        const { customerId } = req.body
+        const finallyCustomerData = customerData.map(customer => {
+            if (customer.customerId !== customerId) {
+                res.status(404)
+                return res.json({ "success": false, "message": "customer not found" })
+            }
+            if (customer.customerId === customerId) {
+                customer.cart = customer.cart.filter(item => item.productId !== productId)
+            } 
+            return customer
+        })
+        await writeCustomerFile(finallyCustomerData)
+        return res.end("the product deleted succesfuly.")
+    } catch (e) {
+        res.status(500)
+        return res.json({ "success": false, "message": `erorr: ${e}` })
+    }
 })
+
+
+
 export default router
