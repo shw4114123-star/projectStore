@@ -1,12 +1,8 @@
 [
     {
         "customerId": "c1",
-        "balance": 350.00,
+        "balance": 350,
         "cart": [
-            {
-                "productId": "1",
-                "quantity": 1
-            },
             {
                 "productId": "5",
                 "quantity": 2
@@ -22,7 +18,7 @@
     },
     {
         "customerId": "c3",
-        "balance": 1200.00,
+        "balance": 1200,
         "cart": [
             {
                 "productId": "4",
@@ -33,7 +29,7 @@
     },
     {
         "customerId": "c4",
-        "balance": 0.00,
+        "balance": 0,
         "cart": [
             {
                 "productId": "2",
@@ -48,7 +44,7 @@
     },
     {
         "customerId": "c5",
-        "balance": 275.50,
+        "balance": 275.5,
         "cart": [
             {
                 "productId": "7",
