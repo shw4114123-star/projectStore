@@ -33,7 +33,7 @@ export async function checkProduct(productId, quantity) {
 
 export async function checkCustomerId(customerId) {
     const data = await readcustomerFile()
-    const customer = data.find(customer => +customer.id === customerId)
+    const customer = data.find(customer => customer.customerId === customerId)
     if (!customer) return false
     return customer
 }

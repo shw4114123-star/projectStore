@@ -5,39 +5,56 @@ import { checkProduct, checkCustomerId } from ".././service/service.js"
 const router = express.Router()
 const products = await readProductFile()
 const customers = await readcustomerFile()
+const orders = await readOrderFile()
 
 router.get("/", (req, res) => {
-    res.end("hello from API")
+    try {
+        res.end("hello from API")
+    } catch (e) {
+        res.status(500)
+        return res.json({ "success": false, "message": `erorr: ${e}` })
+    }
 })
 
 router.get("/health", (req, res) => {
-    res.end("the server working")
+    try {
+        res.end("the server working")
+    } catch (e) {
+        res.status(500)
+        return res.json({ "success": false, "message": `erorr: ${e}` })
+    }
 })
 
 
 router.get("/products", (req, res) => {
-    let data = products
-    const { inStock, maxPrice, search } = req.query;
-    if (maxPrice) {
-        if (isNaN(maxPrice) || maxPrice.length <= 0) {
-            res.status(400)
-            return res.json({ "success": false, "message": "Error url" })
+    try {
+        let data = products
+        const { inStock, maxPrice, search } = req.query;
+        if (maxPrice) {
+            if (isNaN(maxPrice) || maxPrice.length <= 0) {
+                res.status(400)
+                return res.json({ "success": false, "message": "Error url" })
+            }
+            data = data.filter(product => +product.price <= maxPrice);
         }
-        data = data.filter(product => +product.price <= maxPrice);
+        if (search) {
+            data = data.filter(product => product.name.includes(search));
+        }
+        if (inStock === "true") {
+            data = data.filter(product => +product.stock > 0);
+        }
+        if (inStock && inStock !== "true") {
+            res.status(400)
+            return res.json({ "success": false, "message": "Error url" });
+        }
+        if (product.length === data.length && req.url.includes("?")) return res.end("not find a right query")
+        return res.json(data)
+    } catch (e) {
+        res.status(500)
+        return res.json({ "success": false, "message": `erorr: ${e}` })
     }
-    if (search) {
-        data = data.filter(product => product.name.includes(search));
-    }
-    if (inStock === "true") {
-        data = data.filter(product => +product.stock > 0);
-    }
-    if (inStock && inStock !== "true") {
-        res.status(400)
-        return res.json({ "success": false, "message": "Error url" });
-    }
-    if (product.length === data.length && req.url.includes("?")) return res.end("not find a right query")
-    return res.json(data)
 })
+
 
 router.get("/cart", (req, res) => {
     try {
@@ -61,6 +78,7 @@ router.get("/cart", (req, res) => {
     }
 })
 
+
 router.get("/account/balance", async (req, res) => {
     try {
         const customersData = await readcustomerFile()
@@ -81,15 +99,25 @@ router.get("/account/balance", async (req, res) => {
     }
 })
 
+
 router.post("/cart/items", async (req, res) => {
     try {
         const { customerId, productId, quantity } = req.body;
         const checkCustomer = await checkCustomerId(customerId)
-        if (!customerId || !checkCustomer) return res.json({ "success": false, "message": "Error message" });
-        if (!productId) return res.json({ "success": false, "message": "Error message" });
-        if (!quantity) return res.json({ "success": false, "message": "Error message" });
+        if (!customerId || !checkCustomer) {
+            res.status(400)
+            return res.json({ "success": false, "message": "Error message" });
+        }
+        if (!productId) {
+            res.status(400)
+            return res.json({ "success": false, "message": "Error message" });
+        }
+        if (!quantity) {
+            res.status(400)
+            return res.json({ "success": false, "message": "Error message" })
+        };
         const checkProducts = await checkProduct(productId, quantity)
-        return res.json(checkProducts);
+        return res.json({ "success": true, "data": checkProducts });
     } catch (e) {
         res.status(500)
         return res.json({ "success": false, "message": `erorr: ${e}` })
@@ -109,7 +137,7 @@ router.delete("/cart/items/:productId", async (req, res) => {
             }
             if (customer.customerId === customerId) {
                 customer.cart = customer.cart.filter(item => item.productId !== productId)
-            } 
+            }
             return customer
         })
         await writeCustomerFile(finallyCustomerData)
@@ -120,6 +148,26 @@ router.delete("/cart/items/:productId", async (req, res) => {
     }
 })
 
+
+router.get("/ordrs", async (req, res) => {
+    try {
+        const { customerId } = req.query
+        if (!customerId) {
+            res.status(400)
+            res.json({ "success": false, "message": "wrong url" })
+        }
+        const findOrder = orders.find(order => order.customerId === customerId)
+        if (!findOrder) {
+            res.status(404)
+            return res.json({ "success": false, "message": "customer not found" })
+        }
+        const items = findOrder.items
+        return res.json({ "success": true, "data": items })
+    } catch (e) {
+        res.status(500)
+        return res.json({ "success": false, "message": `erorr: ${e}` })
+    }
+})
 
 
 export default router
